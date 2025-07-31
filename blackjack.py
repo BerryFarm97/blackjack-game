@@ -1,4 +1,5 @@
 import random
+import time
 
 def calculate_score(hand: list[str]) -> int:
     score = 0
@@ -13,7 +14,7 @@ def calculate_score(hand: list[str]) -> int:
             aces += 1
         else:
             score += int(rank)
-    
+
     while score > 21 and aces > 0:
         score -= 10
         aces -= 1
@@ -41,7 +42,17 @@ def player_action(deck, player_hand):                   #Added player input to a
         else:
             print("Invalid options. Please choose Hit or Stand.\n")
             
-
+def dealer_action(deck, dealer_hand):
+    score = calculate_score(dealer_hand)
+    print("Dealer has:", score)
+    time.sleep(1)
+    while score < 17:
+        dealer_hand.append(deck.pop())
+        score = calculate_score(dealer_hand)
+        print("Dealer has:", score)
+        time.sleep(1)
+    print("Dealer's final hand:", dealer_hand)
+    return score
 
 def main():
 
@@ -66,11 +77,21 @@ def main():
 
         #Call player turn
     player_score = player_action(deck, player_hand)
-    
-    print(f"\nYou ended with: {player_score}\n")
+    if player_score > 21:
+        dealer_score = calculate_score(dealer_hand)
+        print("You busted. Dealer wins.")
+        return
+    else:
+        dealer_score = dealer_action(deck, dealer_hand)
 
-# TODO: Add dealer turn and winner comparison
-
+        if player_score > dealer_score and player_score <= 21:
+            print("You win.")
+        elif player_score < dealer_score and dealer_score <= 21:
+            print("Dealer won.")
+        elif player_score < dealer_score and dealer_score > 21:
+            print("Dealer busts! You win.")
+        else:
+            print("It's a tie! You push.")
 
 if __name__ == "__main__":
     main()
